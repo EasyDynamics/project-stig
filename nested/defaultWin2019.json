@@ -1,0 +1,28 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "definitions": {
+            "value": [
+                {
+                    "imageDefinitionName": "Win2019_STIG",
+                    "osType": "Windows",
+                    "osState": "Generalized",
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "sku": "2019-Datacenter-Stig",
+                    "minRecommendedvCPUs": "2",
+                    "maxRecommendedvCPUs": "8",
+                    "minRecommendedMemory": "32",
+                    "maxRecommendedMemory": "48"
+                }
+            ]
+        },
+        "galleryName": {
+            "value": "rgstigwin2019_SIG"
+        },
+        "hyperVGeneration": {
+            "value": "V2"
+        }
+    }
+}

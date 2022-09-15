@@ -11,9 +11,6 @@
       "galleryName": {
         "type": "string"
       },
-      "workspaceName": {
-        "type": "string"
-      },
       "imageTemplateName": {
         "type": "string"
       },
@@ -28,12 +25,14 @@
       }, 
       "osRole": {
         "type": "string"
+      }, 
+      "minorVersion": {
+        "type": "string"
       }
     },
     "variables": {
       "setPowerStigUrl": "https://raw.githubusercontent.com/shawngib/project-stig/main/scripts/setPowerStignoaudit.ps1",
-      "setAuditingStigUrl": "https://raw.githubusercontent.com/shawngib/project-stig/main/scripts/auditStig.ps1",
-      "wsResourceId": "[concat('/subscriptions/', subscription().subscriptionId, '/resourceGroups/',resourceGroup().name, '/providers/','Microsoft.OperationalInsights/workspaces/', parameters('workspaceName'))]"
+      "setAuditingStigUrl": "https://raw.githubusercontent.com/shawngib/project-stig/main/scripts/auditStig.ps1"
     },
     "resources": [
       {
@@ -59,7 +58,7 @@
         "properties": {
           "buildTimeoutInMinutes": 100,
           "vmProfile": {
-            "vmSize": "Standard_D8_v5",
+            "vmSize": "Standard_D8s_v4",
             "osDiskSizeGB": 127
           },
           "source": {
@@ -74,8 +73,6 @@
                 "type": "PowerShell",
                 "name": "setEnvVariables",
                 "inline": [
-                  "[concat('[System.Environment]::SetEnvironmentVariable(''WORKSPACE_ID'',''',reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')),'2017-03-15-preview').customerId,''',[System.EnvironmentVariableTarget]::Machine)')]",
-                  "[concat('[System.Environment]::SetEnvironmentVariable(''WORKSPACE_KEY'',''',listKeys(variables('wsResourceId'), '2015-11-01-preview').primarySharedKey,''', [System.EnvironmentVariableTarget]::Machine)')]",
                   "[concat('[System.Environment]::SetEnvironmentVariable(''POWERSTIG_VER'',''',parameters('powerStigVersion'),''', [System.EnvironmentVariableTarget]::Machine)')]",
                   "[concat('[System.Environment]::SetEnvironmentVariable(''STIG_OSVER'',''',parameters('osVersion'),''', [System.EnvironmentVariableTarget]::Machine)')]",
                   "[concat('[System.Environment]::SetEnvironmentVariable(''STIG_OSROLE'',''',parameters('osRole'),''', [System.EnvironmentVariableTarget]::Machine)')]",
@@ -126,7 +123,7 @@
           "distribute": [
             {
               "type": "SharedImage",
-              "galleryImageId": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/galleries/',parameters('galleryName'),'/images/',parameters('imageTemplateName'),'/versions/',parameters('stigVersion'),'.1')]",
+              "galleryImageId": "[concat(resourceGroup().id,'/providers/Microsoft.Compute/galleries/',parameters('galleryName'),'/images/',parameters('imageTemplateName'),'/versions/',parameters('stigVersion'),'.',parameters('minorVersion'))]",
               "runOutputName": "[parameters('imageTemplateName')]",
               "artifactTags": {
                 "source": "azureVmImageBuilder",

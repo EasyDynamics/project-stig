@@ -3,21 +3,8 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "definitions": {
-        "type": "array",
-        "defaultValue":
-            [
-                // {
-                //     "imageDefinitionName": "Win10WVDw365_STIG",
-                //     "osType": "Windows",
-                //     "osState": "Generalized",
-                //     "publisher": "AzureGlobalDesktop",
-                //     "offer": "office-365",
-                //     "sku": "20h1-evd-o365pp-stig",
-                //     "minRecommendedvCPUs": "2",
-                //     "maxRecommendedvCPUs": "8",
-                //     "minRecommendedMemory": "32",
-                //     "maxRecommendedMemory": "48"
-                // },
+            "type": "array",
+            "defaultValue": [
                 {
                     "imageDefinitionName": "Win2019_STIG",
                     "osType": "Windows",
@@ -29,56 +16,7 @@
                     "maxRecommendedvCPUs": "8",
                     "minRecommendedMemory": "32",
                     "maxRecommendedMemory": "48"
-                },
-                {
-                    "imageDefinitionName": "Win2019_STIG_Small",
-                    "osType": "Windows",
-                    "osState": "Generalized",
-                    "publisher": "MicrosoftWindowsServer",
-                    "offer": "WindowsServer",
-                    "sku": "2019-Datacenter-Stig-Small",
-                    "minRecommendedvCPUs": "2",
-                    "maxRecommendedvCPUs": "8",
-                    "minRecommendedMemory": "32",
-                    "maxRecommendedMemory": "48"
                 }
-                // },
-                // {
-                //     "imageDefinitionName": "Win2016_STIG",
-                //     "osType": "Windows",
-                //     "osState": "Generalized",
-                //     "publisher": "MicrosoftWindowsServer",
-                //     "offer": "WindowsServer",
-                //     "sku": "2016-Datacenter-Stig",
-                //     "minRecommendedvCPUs": "2",
-                //     "maxRecommendedvCPUs": "8",
-                //     "minRecommendedMemory": "32",
-                //     "maxRecommendedMemory": "48"
-                // },
-                // {
-                //     "imageDefinitionName": "Win2016DC_STIG",
-                //     "osType": "Windows",
-                //     "osState": "Generalized",
-                //     "publisher": "MicrosoftWindowsServer",
-                //     "offer": "WindowsServer",
-                //     "sku": "2016-Datacenter-DC-Stig",
-                //     "minRecommendedvCPUs": "2",
-                //     "maxRecommendedvCPUs": "8",
-                //     "minRecommendedMemory": "32",
-                //     "maxRecommendedMemory": "48"
-                // },
-                // {
-                //     "imageDefinitionName": "Redhat8_STIG",
-                //     "osType": "Linux",
-                //     "osState": "Generalized",
-                //     "publisher": "Redhat",
-                //     "offer": "RHEL",
-                //     "sku": "8-RedHat-Stig",
-                //     "minRecommendedvCPUs": "2",
-                //     "maxRecommendedvCPUs": "8",
-                //     "minRecommendedMemory": "32",
-                //     "maxRecommendedMemory": "48"
-                // }
             ]
         },
         "galleryName": {
@@ -96,8 +34,7 @@
             "name": "[concat(parameters('galleryName'), '/', parameters('definitions')[copyIndex()].imageDefinitionName)]",
             "apiVersion": "2019-07-01",
             "location": "[resourceGroup().location]",
-            "copy":
-            {
+            "copy": {
                 "name": "Image Definition Copy",
                 "count": "[length(parameters('definitions'))]"
             },
