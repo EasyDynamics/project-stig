@@ -29,19 +29,20 @@
                     "maxRecommendedvCPUs": "8",
                     "minRecommendedMemory": "32",
                     "maxRecommendedMemory": "48"
-                },
-                {
-                    "imageDefinitionName": "Win2019_STIG_Small",
-                    "osType": "Windows",
-                    "osState": "Generalized",
-                    "publisher": "MicrosoftWindowsServer",
-                    "offer": "WindowsServer",
-                    "sku": "2019-Datacenter-Stig-Small",
-                    "minRecommendedvCPUs": "2",
-                    "maxRecommendedvCPUs": "8",
-                    "minRecommendedMemory": "32",
-                    "maxRecommendedMemory": "48"
                 }
+                // },
+                // {
+                //     "imageDefinitionName": "Win2019_STIG_Small",
+                //     "osType": "Windows",
+                //     "osState": "Generalized",
+                //     "publisher": "MicrosoftWindowsServer",
+                //     "offer": "WindowsServer",
+                //     "sku": "2019-Datacenter-Stig-Small",
+                //     "minRecommendedvCPUs": "2",
+                //     "maxRecommendedvCPUs": "8",
+                //     "minRecommendedMemory": "32",
+                //     "maxRecommendedMemory": "48"
+                // }
                 // },
                 // {
                 //     "imageDefinitionName": "Win2016_STIG",
