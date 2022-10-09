@@ -2,44 +2,63 @@
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-    "rgName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the resourceGroup to create"
-      }
-    },
-    "rgLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "Location for the resourceGroup"
-      }
-    },
-    "powerStigVersion": {
-        "type": "string",
-        "metadata": {
-            "description": "Version of PowerSTIG to use. Previous default was 4.7.1"
+        "rgName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the resourceGroup to create"
+            }
         },
-        "defaultValue": "4.13.1"
-    }
+        "rgLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for the resourceGroup"
+            }
+        },
+        "powerStigVersion": {
+            "type": "string",
+            "metadata": {
+                "description": "Version of PowerSTIG to use. Previous default was 4.7.1"
+            },
+            "defaultValue": "4.13.1"
+        },
+        "storageAccountResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Resource group of the installation scripts storage account"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage account to pull installation script from"
+            }
+        },
+        "storageContainerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Storage container to pull installation script from"
+            }
+        },
+        "customScriptFileName": {
+            "type": "string",
+            "metadata": {
+                "description": "File name of the custom script to run, including the extension"
+            }
+        }
     },
     "functions": [],
     "variables": {
         "workspaceUrl": "[uri(deployment().properties.templateLink.uri, 'nested/workspace.json')]",
         "workspaceDashboardUrl": "[uri(deployment().properties.templateLink.uri, 'nested/dashboard.json')]",
         "managedIdentityUrl": "[uri(deployment().properties.templateLink.uri, 'nested/managedIdentity.json')]",
+        "managedIdentityAccessUrl": "[uri(deployment().properties.templateLink.uri, 'nested/managedIdentityAccess.json')]",
         "imageGalleryUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageGallery.json')]",
-        "win10mageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows10Evd.json')]",
         "srv2016imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2016.json')]",
         "srv2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019.json')]",
-        "srv2019smallimageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019small.json')]",
-        "rhel7imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/redhat7.json')]",
-        "rhel8imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/redhat8.json')]",
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
-        "win10MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/Windows10v2r1/localhost.mof')]",
         "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]",
-        "srv2019DCMofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019DCv2r1/localhost.mof')]",
-        "srv2016MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2016v1r12/localhost.mof')]",
-        "srv2016DCMofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2016DCv1r12/localhost.mof')]"
+        "custom2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019_custom.json')]",
+        "customScriptUri": "[concat('https://', parameters('storageAccountName'), 'blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'))]"
     },
     "resources": [
         {
@@ -67,33 +86,12 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "name":{
+                    "name": {
                         "value": "[parameters('rgName')]"
                     }
                 }
             }
         },
-        /* {
-            "name": "workspaceDashboardDeploy",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "workspaceDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('workspaceDashboardUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "workspaceName":{
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    }
-                }
-            }
-        }, */
         {
             "name": "managedIdentityDeploy",
             "type": "Microsoft.Resources/deployments",
@@ -109,8 +107,35 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "name":{
+                    "name": {
                         "value": "[parameters('rgName')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "managedIdentityStorageAccessDeploy",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2019-10-01",
+            "resourceGroup": "[parameters('rgName')]",
+            "dependsOn": [
+                "managedIdentityDeploy"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('managedIdentityAccessUrl')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "storageAccountResourceGroup": {
+                        "value": "[parameters('storageAccountResourceGroup')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[parameters('storageAccountName')]"
+                    },
+                    "identityPrincipalId": {
+                        "value": "[reference('managedIdentityDeploy').outputs.identityPrincipalId.value]"
                     }
                 }
             }
@@ -151,95 +176,8 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "galleryName":{
+                    "galleryName": {
                         "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    }
-                }
-            }
-        },
-/*         {
-            "name": "windows10STIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('win10mageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId":{
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "mofUrl":{
-                        "value": "[variables('win10MofUrl')]"
-                    },
-                    "galleryName":{
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                     "imageTemplateName": {
-                         "value" :"Win10WVDw365_STIG" 
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.1"
-                    },
-                    "osVersion" : {
-                        "value": "10"
-                    }
-                }
-            }
-        }, */
-        {
-            "name": "windows2019smallSTIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('srv2019smallimageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId":{
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "mofUrl":{
-                        "value": "[variables('srv2019MofUrl')]"
-                    },
-                    "galleryName":{
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                     "imageTemplateName":  {
-                         "value" :"Win2019_STIG_Small"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.4"
-                    },
-                    "osVersion" : {
-                        "value": "2019"
-                    }, 
-                    "osRole": {
-                        "value": "MS"
                     }
                 }
             }
@@ -259,120 +197,30 @@
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "identityId":{
+                    "identityId": {
                         "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
                     },
-                    "mofUrl":{
+                    "mofUrl": {
                         "value": "[variables('srv2019MofUrl')]"
                     },
-                    "galleryName":{
+                    "galleryName": {
                         "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
                     },
                     "workspaceName": {
                         "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
                     },
-                     "imageTemplateName":  {
-                         "value" :"Win2019_STIG"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
+                    "imageTemplateName": {
+                        "value": "Win2019_STIG"
+                    },
+                    "powerStigVersion": {
+                        "value": "[parameters('powerStigVersion')]"
+                    },
+                    "stigVersion": {
                         "value": "2.4"
                     },
-                    "osVersion" : {
+                    "osVersion": {
                         "value": "2019"
-                    }, 
-                    "osRole": {
-                        "value": "MS"
-                    }
-                }
-            }
-        }/* ,
-        {
-            "name": "windows2019DCSTIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('srv2019imageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId":{
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
                     },
-                    "mofUrl":{
-                        "value": "[variables('srv2019DCMofUrl')]"
-                    },
-                    "galleryName":{
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                     "imageTemplateName":  {
-                         "value" :"Win2019DC_STIG"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.1"
-                    },
-                    "osVersion" : {
-                        "value": "2019"
-                    }, 
-                    "osRole": {
-                        "value": "DC"
-                    }
-                }
-            }
-        },
-        {
-            "name": "windows2016STIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('srv2016imageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId":{
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "mofUrl":{
-                        "value": "[variables('srv2016MofUrl')]"
-                    },
-                    "galleryName":{
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                     "imageTemplateName":  {
-                         "value" :"Win2016_STIG"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.1"
-                    },
-                    "osVersion" : {
-                        "value": "2016"
-                    }, 
                     "osRole": {
                         "value": "MS"
                     }
@@ -380,7 +228,7 @@
             }
         },
         {
-            "name": "windows2016DCSTIGtemplate",
+            "name": "custom2019imageTemplateUrl",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "resourceGroup": "[parameters('rgName')]",
@@ -390,118 +238,43 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('srv2016imageTemplateUrl')]",
+                    "uri": "[variables('custom2019imageTemplateUrl')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
-                    "identityId":{
+                    "identityId": {
                         "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
                     },
-                    "mofUrl":{
-                        "value": "[variables('srv2016DCMofUrl')]"
+                    "mofUrl": {
+                        "value": "[variables('srv2019MofUrl')]"
                     },
-                    "galleryName":{
+                    "galleryName": {
                         "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
                     },
                     "workspaceName": {
                         "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
                     },
-                     "imageTemplateName":  {
-                         "value" :"Win2016DC_STIG"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.1"
+                    "imageTemplateName": {
+                        "value": "Win2019_STIG_Custom"
                     },
-                    "osVersion" : {
-                        "value": "2016"
-                    }, 
+                    "powerStigVersion": {
+                        "value": "[parameters('powerStigVersion')]"
+                    },
+                    "stigVersion": {
+                        "value": "2.4"
+                    },
+                    "osVersion": {
+                        "value": "2019"
+                    },
                     "osRole": {
-                        "value": "DC"
+                        "value": "MS"
+                    },
+                    "customScriptUri": {
+                        "value": "[parameters('customScriptUri')"
                     }
                 }
             }
-        },
-        {
-            "name": "redhatlinux8STIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('rhel8imageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId":{
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "galleryName":{
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                     "imageTemplateName":  {
-                         "value" :"RHEL8_STIG"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.1"
-                    },
-                    "osVersion" : {
-                        "value": "8"
-                    }
-                }
-            }
-        },
-        {
-            "name": "redhatlinux7STIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('rhel7imageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId":{
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "galleryName":{
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                     "imageTemplateName":  {
-                         "value" :"RHEL7_STIG"
-                     },
-                     "powerStigVersion": {
-                         "value": "[parameters('powerStigVersion')]"
-                     },
-                    "stigVersion" : {
-                        "value": "2.1"
-                    },
-                    "osVersion" : {
-                        "value": "7"
-                    }
-                }
-            }
-        } */
+        }
     ],
     "outputs": {}
 }

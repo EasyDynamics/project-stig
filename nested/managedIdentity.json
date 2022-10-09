@@ -38,6 +38,10 @@
         "identityName" : {
             "type": "string",
             "value": "[variables('identityName')]"
+        },
+        "identityPrincipalId" : {
+            "type": "string",
+            "value": "[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', variables('identityName'))]"
         }
     }
 }
