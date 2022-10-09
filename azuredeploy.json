@@ -53,12 +53,11 @@
         "managedIdentityUrl": "[uri(deployment().properties.templateLink.uri, 'nested/managedIdentity.json')]",
         "managedIdentityAccessUrl": "[uri(deployment().properties.templateLink.uri, 'nested/managedIdentityAccess.json')]",
         "imageGalleryUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageGallery.json')]",
-        "srv2016imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2016.json')]",
         "srv2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019.json')]",
+        "custom2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019_custom.json')]",
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
         "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]",
-        "custom2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019_custom.json')]",
-        "customScriptUri": "[concat('https://', parameters('storageAccountName'), 'blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'))]"
+        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.privatelink.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'))]"
     },
     "resources": [
         {
@@ -113,33 +112,33 @@
                 }
             }
         },
-        {
-            "name": "managedIdentityStorageAccessDeploy",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "managedIdentityDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('managedIdentityAccessUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "storageAccountResourceGroup": {
-                        "value": "[parameters('storageAccountResourceGroup')]"
-                    },
-                    "storageAccountName": {
-                        "value": "[parameters('storageAccountName')]"
-                    },
-                    "identityPrincipalId": {
-                        "value": "[reference('managedIdentityDeploy').outputs.identityPrincipalId.value]"
-                    }
-                }
-            }
-        },
+        // {
+        //     "name": "managedIdentityStorageAccessDeploy",
+        //     "type": "Microsoft.Resources/deployments",
+        //     "apiVersion": "2019-10-01",
+        //     "resourceGroup": "[parameters('rgName')]",
+        //     "dependsOn": [
+        //         "managedIdentityDeploy"
+        //     ],
+        //     "properties": {
+        //         "mode": "Incremental",
+        //         "templateLink": {
+        //             "uri": "[variables('managedIdentityAccessUrl')]",
+        //             "contentVersion": "1.0.0.0"
+        //         },
+        //         "parameters": {
+        //             "storageAccountResourceGroup": {
+        //                 "value": "[parameters('storageAccountResourceGroup')]"
+        //             },
+        //             "storageAccountName": {
+        //                 "value": "[parameters('storageAccountName')]"
+        //             },
+        //             "identityPrincipalId": {
+        //                 "value": "[reference('managedIdentityDeploy').outputs.identityPrincipalId.value]"
+        //             }
+        //         }
+        //     }
+        // },
         {
             "name": "imageGalleryDeploy",
             "type": "Microsoft.Resources/deployments",
@@ -182,51 +181,51 @@
                 }
             }
         },
-        {
-            "name": "windows2019STIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('srv2019imageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId": {
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "mofUrl": {
-                        "value": "[variables('srv2019MofUrl')]"
-                    },
-                    "galleryName": {
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "workspaceName": {
-                        "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
-                    },
-                    "imageTemplateName": {
-                        "value": "Win2019_STIG"
-                    },
-                    "powerStigVersion": {
-                        "value": "[parameters('powerStigVersion')]"
-                    },
-                    "stigVersion": {
-                        "value": "2.4"
-                    },
-                    "osVersion": {
-                        "value": "2019"
-                    },
-                    "osRole": {
-                        "value": "MS"
-                    }
-                }
-            }
-        },
+        // {
+        //     "name": "windows2019STIGtemplate",
+        //     "type": "Microsoft.Resources/deployments",
+        //     "apiVersion": "2019-10-01",
+        //     "resourceGroup": "[parameters('rgName')]",
+        //     "dependsOn": [
+        //         "imageDefinitionsDeploy"
+        //     ],
+        //     "properties": {
+        //         "mode": "Incremental",
+        //         "templateLink": {
+        //             "uri": "[variables('srv2019imageTemplateUrl')]",
+        //             "contentVersion": "1.0.0.0"
+        //         },
+        //         "parameters": {
+        //             "identityId": {
+        //                 "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
+        //             },
+        //             "mofUrl": {
+        //                 "value": "[variables('srv2019MofUrl')]"
+        //             },
+        //             "galleryName": {
+        //                 "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
+        //             },
+        //             "workspaceName": {
+        //                 "value": "[reference('workspaceDeploy').outputs.workspaceName.value]"
+        //             },
+        //             "imageTemplateName": {
+        //                 "value": "Win2019_STIG"
+        //             },
+        //             "powerStigVersion": {
+        //                 "value": "[parameters('powerStigVersion')]"
+        //             },
+        //             "stigVersion": {
+        //                 "value": "2.4"
+        //             },
+        //             "osVersion": {
+        //                 "value": "2019"
+        //             },
+        //             "osRole": {
+        //                 "value": "MS"
+        //             }
+        //         }
+        //     }
+        // },
         {
             "name": "custom2019imageTemplateUrl",
             "type": "Microsoft.Resources/deployments",
@@ -270,7 +269,7 @@
                         "value": "MS"
                     },
                     "customScriptUri": {
-                        "value": "[parameters('customScriptUri')"
+                        "value": "[variables('customScriptUri')]"
                     }
                 }
             }
