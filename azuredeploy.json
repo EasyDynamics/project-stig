@@ -45,12 +45,6 @@
                 "description": "File name of the custom script to run, including the extension"
             }
         },
-        "subnetId": {
-            "type": "string",
-            "metadata": {
-                "description": "The Identifier of the Subnet to build the VM in. This is necessary to obtain scripts from a private storage account"
-            }
-        },
         "sasToken": {
             "type": "string",
             "metadata": {
@@ -282,9 +276,6 @@
                     },
                     "customScriptUri": {
                         "value": "[variables('customScriptUri')]"
-                    },
-                    "subnetId": {
-                        "value": "[parameters('subnetId')]"
                     }
                 }
             }

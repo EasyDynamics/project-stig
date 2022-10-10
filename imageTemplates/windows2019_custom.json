@@ -31,9 +31,6 @@
       },
       "customScriptUri": {
         "type": "string"
-      },
-      "subnetId": {
-        "type": "string"
       }
     },
     "variables": {
@@ -66,10 +63,7 @@
           "buildTimeoutInMinutes": 100,
           "vmProfile": {
             "vmSize": "Standard_D8s_v4",
-            "osDiskSizeGB": 127,
-            "vnetConfig": {
-              "subnetId": "[parameters('subnetId')]"
-            }
+            "osDiskSizeGB": 127
           },
           "source": {
             "type": "PlatformImage",
