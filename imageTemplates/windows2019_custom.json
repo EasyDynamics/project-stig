@@ -125,7 +125,7 @@
               "type": "PowerShell",
               "name": "RunCustomScript",
               "runElevated": true,
-              "scriptUri": "[parameters('customScriptUri')]",
+              "scriptUri": "[parameters('customScriptUri')]"
             },            
             {
               "type": "WindowsUpdate",
