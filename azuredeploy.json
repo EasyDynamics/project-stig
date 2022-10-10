@@ -44,6 +44,18 @@
             "metadata": {
                 "description": "File name of the custom script to run, including the extension"
             }
+        },
+        "subnetId": {
+            "type": "string",
+            "metadata": {
+                "description": "The Identifier of the Subnet to build the VM in. This is necessary to obtain scripts from a private storage account"
+            }
+        },
+        "sasToken": {
+            "type": "string",
+            "metadata": {
+                "description": "SASToken used to retrieve blobs from storage account"
+            }
         }
     },
     "functions": [],
@@ -57,7 +69,7 @@
         "custom2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019_custom.json')]",
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
         "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]",
-        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.privatelink.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'))]"
+        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'), parameters('sasToken')]"
     },
     "resources": [
         {
@@ -270,6 +282,9 @@
                     },
                     "customScriptUri": {
                         "value": "[variables('customScriptUri')]"
+                    },
+                    "subnetId": {
+                        "value": "[parameters('subnetId')]"
                     }
                 }
             }
