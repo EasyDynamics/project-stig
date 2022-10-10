@@ -70,7 +70,7 @@
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
         "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]",
         "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'), parameters('sasToken'))]",
-        "customBinaryPackageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customBinaryPackageName'), parameters('sasToken'))]",
+        "customBinaryPackageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customBinaryPackageName'), parameters('sasToken'))]"
     },
     "resources": [
         {
