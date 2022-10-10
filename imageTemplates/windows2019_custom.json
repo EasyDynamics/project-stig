@@ -113,7 +113,7 @@
               "type": "File",
               "name": "customBinaryPackageDownload",
               "sourceUri": "[parameters('customBinaryPackageUri')]",
-              "destination": "[concat('c:\\','parameters('customBinaryPackageName'))]"
+              "destination": "[concat('c:\\', parameters('customBinaryPackageName'))]"
             },
             {
               "type": "PowerShell",
