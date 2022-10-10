@@ -63,7 +63,7 @@
         "custom2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019_custom.json')]",
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
         "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]",
-        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'), parameters('sasToken')]"
+        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'), parameters('sasToken'))]"
     },
     "resources": [
         {
