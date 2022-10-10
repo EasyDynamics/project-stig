@@ -31,6 +31,12 @@
       },
       "customScriptUri": {
         "type": "string"
+      },
+      "customBinaryPackageUri": {
+        "type": "string"
+      },
+      "customBinaryPackageName": {
+        "type": "string"
       }
     },
     "variables": {
@@ -55,7 +61,6 @@
           "type": "UserAssigned",
           "userAssignedIdentities": {
             "[resourceID('Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('identityId'))]": {
-              
             }
           }
         },
@@ -105,6 +110,12 @@
               "destination": "c:\\auditStig.ps1"
             },
             {
+              "type": "File",
+              "name": "customBinaryPackageDownload",
+              "sourceUri": "[parameters('customBinaryPackageUri')]",
+              "destination": "[concat('c:\\','parameters('customBinaryPackageName'))]"
+            },
+            {
               "type": "PowerShell",
               "name": "SetUpPowerStig",
               "runElevated": true,
@@ -114,7 +125,7 @@
               "type": "PowerShell",
               "name": "RunCustomScript",
               "runElevated": true,
-              "scriptUri": "[parameters('customScriptUri')]"
+              "scriptUri": "[parameters('customScriptUri')]",
             },            
             {
               "type": "WindowsUpdate",

@@ -45,6 +45,12 @@
                 "description": "File name of the custom script to run, including the extension"
             }
         },
+        "customBinaryPackageName": {
+            "type": "string",
+            "metadata": {
+                "description": "File name of a package that the custom script uses i.e. zip file containing installation media"
+            }
+        },
         "sasToken": {
             "type": "string",
             "metadata": {
@@ -63,7 +69,8 @@
         "custom2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019_custom.json')]",
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
         "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]",
-        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'), parameters('sasToken'))]"
+        "customScriptUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customScriptFileName'), parameters('sasToken'))]",
+        "customBinaryPackageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net/', parameters('storageContainerName'), '/', parameters('customBinaryPackageName'), parameters('sasToken'))]",
     },
     "resources": [
         {
@@ -276,6 +283,12 @@
                     },
                     "customScriptUri": {
                         "value": "[variables('customScriptUri')]"
+                    },
+                    "customBinaryPackageUri": {
+                        "value": "[variables('customBinaryPackageUri')]"
+                    },
+                    "customBinaryPackageName": {
+                        "value": "[parameters('customBinaryPackageName')]"
                     }
                 }
             }
