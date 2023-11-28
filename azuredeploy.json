@@ -19,7 +19,7 @@
             "metadata": {
                 "description": "Version of PowerSTIG to use. Previous default was 4.7.1"
             },
-            "defaultValue": "4.13.1"
+            "defaultValue": "4.18.0"
         },
         "minorVersion": {
             "type": "string",
@@ -33,24 +33,23 @@
             "metadata": {
                 "description": "Name of the image template"
             },
-            "defaultValue": "Win2019_STIG"
+            "defaultValue": "Win2022_STIG"
         },
         "imageTemplateCoreName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the core (no gui) image template"
             },
-            "defaultValue": "Win2019_Core_STIG"
+            "defaultValue": "Win2022_Core_STIG"
         }
     },
     "functions": [],
     "variables": {
         "managedIdentityUrl": "[uri(deployment().properties.templateLink.uri, 'nested/managedIdentity.json')]",
         "imageGalleryUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageGallery.json')]",
-        "srv2019imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019.json')]",
-        "srv2019coreimageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2019core.json')]",
+        "srv2022imageTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'imageTemplates/windows2022.json')]",
         "imageDefinitionUrl": "[uri(deployment().properties.templateLink.uri, 'nested/imageDefinition.json')]",
-        "srv2019MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2019v2r4/localhost.mof')]"
+        "srv2022MofUrl": "[uri(deployment().properties.templateLink.uri, 'mof/WindowsServer2022v1r3/localhost.mof')]"
     },
     "resources": [
         {
@@ -126,24 +125,12 @@
                     "definitions": {
                         "value": [
                             {
-                                "imageDefinitionName": "Win2019_STIG",
+                                "imageDefinitionName": "Win2022_STIG",
                                 "osType": "Windows",
                                 "osState": "Generalized",
                                 "publisher": "MicrosoftWindowsServer",
                                 "offer": "WindowsServer",
-                                "sku": "2019-Datacenter-Stig",
-                                "minRecommendedvCPUs": 4,
-                                "maxRecommendedvCPUs": 16,
-                                "minRecommendedMemory": 64,
-                                "maxRecommendedMemory": 128
-                            },
-                            {
-                                "imageDefinitionName": "Win2019_Core_STIG",
-                                "osType": "Windows",
-                                "osState": "Generalized",
-                                "publisher": "MicrosoftWindowsServer",
-                                "offer": "WindowsServer",
-                                "sku": "2019-Datacenter-Core-Stig",
+                                "sku": "2022-Datacenter-Stig",
                                 "minRecommendedvCPUs": 4,
                                 "maxRecommendedvCPUs": 16,
                                 "minRecommendedMemory": 64,
@@ -155,7 +142,7 @@
             }
         },
         {
-            "name": "windows2019STIGtemplate",
+            "name": "windows2022STIGtemplate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2019-10-01",
             "resourceGroup": "[parameters('rgName')]",
@@ -165,7 +152,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('srv2019imageTemplateUrl')]",
+                    "uri": "[variables('srv2022imageTemplateUrl')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -173,7 +160,7 @@
                         "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
                     },
                     "mofUrl": {
-                        "value": "[variables('srv2019MofUrl')]"
+                        "value": "[variables('srv2022MofUrl')]"
                     },
                     "galleryName": {
                         "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
@@ -188,52 +175,7 @@
                         "value": "2.4"
                     },
                     "osVersion": {
-                        "value": "2019"
-                    },
-                    "osRole": {
-                        "value": "MS"
-                    },
-                    "minorVersion": {
-                        "value": "[parameters('minorVersion')]"
-                    }
-                }
-            }
-        },
-        {
-            "name": "windows2019coreSTIGtemplate",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2019-10-01",
-            "resourceGroup": "[parameters('rgName')]",
-            "dependsOn": [
-                "imageDefinitionsDeploy"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('srv2019coreimageTemplateUrl')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "identityId": {
-                        "value": "[reference('managedIdentityDeploy').outputs.identityName.value]"
-                    },
-                    "mofUrl": {
-                        "value": "[variables('srv2019MofUrl')]"
-                    },
-                    "galleryName": {
-                        "value": "[reference('imageGalleryDeploy').outputs.galleryName.value]"
-                    },
-                    "imageTemplateName": {
-                        "value": "[parameters('imageTemplateCoreName')]"
-                    },
-                    "powerStigVersion": {
-                        "value": "[parameters('powerStigVersion')]"
-                    },
-                    "stigVersion": {
-                        "value": "2.4"
-                    },
-                    "osVersion": {
-                        "value": "2019"
+                        "value": "2022"
                     },
                     "osRole": {
                         "value": "MS"
